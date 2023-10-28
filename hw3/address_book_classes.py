@@ -1,5 +1,7 @@
 from collections import UserDict
+from datetime import datetime
 from exceptions import DuplicateEntry, ValueNotFound
+from constants import BIRTHDAY_FORMAT, DATE_FORMAT
 
 
 class Field:
@@ -8,7 +10,7 @@ class Field:
 
     def __str__(self):
         return str(self.value)
-    
+
     def __eq__(self, __value: object) -> bool:
         print(self.value == __value)
         self.value == __value
@@ -22,7 +24,7 @@ class Name(Field):
 class Phone(Field):
     def __init__(self, phone: str) -> None:
         super().__init__(value=phone)
-    
+
     def __eq__(self, __value: object) -> bool:
         return super().__eq__(__value)
 
@@ -31,13 +33,27 @@ class Phone(Field):
         return len(phone_number) == 10 and phone_number.isdigit()
 
 
+class Birthday(Field):
+    def __init__(self, value):
+        super().__init__(value)
+
+    @staticmethod
+    def validate(d):
+        try:
+            datetime.strptime(d, BIRTHDAY_FORMAT)
+            return True
+        except ValueError:
+            raise ValueError(f"Invalid date format! Expecting: {DATE_FORMAT}")
+
+
 class Record:
-    def __init__(self, name) -> None:
+    def __init__(self, name, birthday='') -> None:
         self.name = Name(name)
         self.phones = []
+        self.add_birthday(birthday)
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}" + "" if not self.birthday else f"birthday {self.birthday.strftime(BIRTHDAY_FORMAT)}"
 
     def with_phone_validation(func):
         def inner(self, phone: str):
@@ -54,6 +70,12 @@ class Record:
             raise DuplicateEntry(self.name, phone)
         else:
             self.phones.append(Phone(phone))
+
+    def add_birthday(self, birthday: str):
+        if birthday and Birthday.validate(birthday):
+            self.birthday = datetime.strptime(birthday, BIRTHDAY_FORMAT)
+        else:
+            self.birthday = None
 
     @with_phone_validation
     def delete_phone(self, phone: str):
@@ -76,7 +98,7 @@ class Record:
                 return p
 
     def __repr__(self) -> str:
-        return f"name = {self.name} phones: {'; '.join(p.value for p in self.phones)}"
+        return f"name = {self.name}, phones: {'; '.join(p.value for p in self.phones)}, birthday = {self.birthday}"
 
 
 class AddressBook(UserDict):
@@ -113,6 +135,17 @@ if __name__ == "__main__":
     john_record.add_phone("1234567890")
     john_record.add_phone("5555555555")
 
+    # trying to create a record with an invalid birthday
+    try:
+        anna_record = Record("Anna", birthday='12/12/1999')
+    except ValueError as e:
+        print(e.args)
+
+    # creating a record with a valid BD
+    anna_record = Record("Anne", birthday='01.10.1980')
+    anna_record.add_phone("9876543210")
+    book.add_record(anna_record)
+
     # Додавання запису John до адресної книги
     book.add_record(john_record)
 
@@ -142,4 +175,4 @@ if __name__ == "__main__":
 
     # Видалення запису Jane
     book.delete("Jane")
-    print(len(book))  # -> 1
+    print(book)

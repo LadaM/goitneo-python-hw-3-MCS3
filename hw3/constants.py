@@ -9,3 +9,6 @@ COMMANDS = {
 }
 
 CONTACTS_FILE = "contacts.json"
+
+BIRTHDAY_FORMAT = '%d.%m.%Y'
+DATE_FORMAT = 'DD.MM.YYYY'

@@ -23,3 +23,5 @@ class DuplicateEntry(Exception):
         super().__init__(*args)
         self.name = name
         self.phone = phone
+
+
