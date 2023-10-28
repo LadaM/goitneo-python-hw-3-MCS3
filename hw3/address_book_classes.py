@@ -1,5 +1,5 @@
 from collections import UserDict
-from exceptions import ValueNotFound
+from exceptions import DuplicateEntry, ValueNotFound
 
 
 class Field:
@@ -8,6 +8,10 @@ class Field:
 
     def __str__(self):
         return str(self.value)
+    
+    def __eq__(self, __value: object) -> bool:
+        print(self.value == __value)
+        self.value == __value
 
 
 class Name(Field):
@@ -18,6 +22,9 @@ class Name(Field):
 class Phone(Field):
     def __init__(self, phone: str) -> None:
         super().__init__(value=phone)
+    
+    def __eq__(self, __value: object) -> bool:
+        return super().__eq__(__value)
 
     @classmethod
     def validate(self, phone_number) -> bool:
@@ -37,12 +44,16 @@ class Record:
             if Phone.validate(phone_number=phone):
                 return func(self, phone)
             else:
-                print("Invalid phone number!")
+                raise ValueError("Invalid phone number!")
         return inner
 
     @with_phone_validation
     def add_phone(self, phone: str):
-        self.phones.append(Phone(phone))
+        phone_record = self.find_phone(phone)
+        if phone_record:
+            raise DuplicateEntry(self.name, phone)
+        else:
+            self.phones.append(Phone(phone))
 
     @with_phone_validation
     def delete_phone(self, phone: str):
@@ -55,12 +66,17 @@ class Record:
             if to_remove:
                 self.phones.remove(to_remove)
                 self.phones.append(Phone(new_phone))
+            else:
+                raise ValueNotFound(phone=old_phone)
 
     @with_phone_validation
     def find_phone(self, phone: str) -> Phone:
         for p in self.phones:
             if p.value == phone:
                 return p
+
+    def __repr__(self) -> str:
+        return f"name = {self.name} phones: {'; '.join(p.value for p in self.phones)}"
 
 
 class AddressBook(UserDict):
@@ -69,19 +85,23 @@ class AddressBook(UserDict):
         '''finds record by username'''
         record = self.data.get(name)
         if not record:
-            raise ValueNotFound(name)
+            raise ValueNotFound(name=name)
         return record
 
     def delete(self, name: str):
         '''deletes record with the name from address book'''
         record = self.data.get(name)
         if not record:
-            raise ValueNotFound(name)
+            raise ValueNotFound(name=name)
         return self.data.pop(record.name.value)
 
     def add_record(self, record: Record):
         '''adds record to the address book'''
         self.data[record.name.value] = record
+
+    def get_records(self):
+        '''returs list of all records stored in the address book'''
+        return self.data.values()
 
 
 if __name__ == "__main__":
@@ -99,7 +119,7 @@ if __name__ == "__main__":
     # Створення та додавання нового запису для Jane
     jane_record = Record("Jane")
     jane_record.add_phone("9876543210")
-    jane_record.delete_phone("98235")  # -> Invalid phone number
+    # jane_record.delete_phone("98235")  # -> Invalid phone number
     book.add_record(jane_record)
 
     # Виведення всіх записів у книзі

@@ -4,7 +4,7 @@ COMMANDS = {
     "exit": "exit",
     "close": "close",
     "add": "add <name> <phone>",
-    "update": "change <username> <phone>",
+    "update": "change <username> <old_phone> <new_phone>",
     "phone":   "phone <username>",
 }
 
