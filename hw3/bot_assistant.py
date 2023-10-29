@@ -21,6 +21,13 @@ def main():
                     print(msg)
                 except ValueError:
                     raise InvalidCommand(COMMANDS.get('add-birthday'))
+            elif command.startswith("show-birthday"):
+                try:
+                    _, name = command.split(' ')
+                    msg = show_birthday(name, contacts)
+                    print(msg)
+                except ValueError:
+                    raise InvalidCommand(COMMANDS.get('show-birthday'))
             elif command.startswith("birthdays"):
                 contacts.birthdays()
             elif command.startswith("add"):
@@ -98,6 +105,12 @@ def add_birthday(name: str, birthday: str, contacts: AddressBook):
     if record:
         record.add_birthday(birthday)
         return "Birthday added"
+
+
+@input_error
+def show_birthday(name: str, contacts: AddressBook):
+    record = contacts.find(name)
+    return record.show_birthday()
 
 
 @input_error

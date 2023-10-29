@@ -7,6 +7,7 @@ COMMANDS = {
     "update": "change <username> <old_phone> <new_phone>",
     "phone":   "phone <username>",
     "add-birthday": "add-birthday <name> <date(DD.MM.YYYY)>",
+    "show-birthday": "show-birthday <name>",
     "birthdays": "birthdays",
 }
 
