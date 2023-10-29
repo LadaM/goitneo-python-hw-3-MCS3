@@ -50,14 +50,15 @@ def show_usernames_by_weekday(users_by_weekday):
     print('\n'.join(get_usernames_by_weekday_lines(users_by_weekday)))
 
 
-def get_usernames_by_weekday_lines(users_by_weekday):
+def get_usernames_by_weekday_lines(users_by_weekday) -> list[str]:
     '''Returns formatted lines
-       weekday name: username, ... 
-       for every user who has birhday next week sorted Mo -> Fr, Sa & Su are moved to the next Mo
+            weekday name: username, ... 
+            for every user who has birhday next week sorted Mo -> Fr, Sa & Su are moved to the next Mo
+       if users_by_weekday is None or empty, returns a line saying so
     '''
     # if there are no birthdays next week
     if not users_by_weekday or len(users_by_weekday) == 0:
-        return "No one has birthday next week"
+        return ["No one has birthday next week"]
 
     lines = []
     # sorting the result by the day of the week => Mo will always come first
