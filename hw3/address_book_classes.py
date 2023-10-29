@@ -173,7 +173,7 @@ class AddressBook(UserDict):
                 contacts.append(
                     {"name": str(record.name), "birthday": record.birthday})
 
-        return get_birthdays_per_week(contacts)
+        return get_birthdays_per_week(contacts, run_weekends=False)
 
 
 if __name__ == "__main__":
