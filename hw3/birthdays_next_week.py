@@ -56,7 +56,7 @@ def get_usernames_by_weekday_lines(users_by_weekday):
        for every user who has birhday next week sorted Mo -> Fr, Sa & Su are moved to the next Mo
     '''
     # if there are no birthdays next week
-    if len(users_by_weekday) == 0:
+    if not users_by_weekday or len(users_by_weekday) == 0:
         return "No one has birthday next week"
 
     lines = []
