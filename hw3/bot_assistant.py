@@ -80,7 +80,6 @@ def input_error(func):
         except ValueError as e:
             return e.args[0]
         except DuplicateEntry as error:
-            print(error)
             return f"We alreay have an entry with name {error.name} and phone {error.phone}"
         except ValueNotFound as error:
             return f"Phone {error.phone} wasn't found in our records!" if error.phone else f"No contact for name {error.name} found"

@@ -171,9 +171,9 @@ class AddressBook(UserDict):
         for record in self.get_records():
             if (record.birthday):
                 contacts.append(
-                    {"name": record.name.value, "birthday": record.birthday})
+                    {"name": str(record.name), "birthday": record.birthday})
 
-        return get_birthdays_per_week(contacts, True)
+        return get_birthdays_per_week(contacts)
 
 
 if __name__ == "__main__":

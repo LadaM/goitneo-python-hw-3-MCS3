@@ -1,0 +1,33 @@
+    add Alice 1234567890
+    add Alice 1234567891
+    add-birthday Alice 1/12/90
+    add-birthday Alice 01.11.1989
+    show-birthday Alice
+
+    birthdays
+
+    add Bob 9876543210
+    show-birthday Bob
+
+    add Charlie 5555555555
+    phone David
+    add David 1231231230
+    phone David
+    add Emma 999999999
+    add Frank 7777777777
+    add Grace 8888888888
+    add Grace 4444444444
+    phone Grace
+    add Isabel 6666666666
+    add JackDoe 1111111111
+
+    all
+
+    change Alice 1234567890 9876543219
+    phone Alice
+    change Bob 9876543210 555555556
+    change David 1231231230 8888888887
+    change Emma 9999999999 1111111122
+    change Isabel 6666666666 4444444455
+    
+    add-birthday Unknown 10.12.1967
