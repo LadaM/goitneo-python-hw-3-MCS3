@@ -28,7 +28,7 @@ class Name(Field):
         super().__init__(value=name)
 
     def __str__(self):
-        return super().__str__()
+        return super().__str__().title()
 
     def __repr__(self) -> str:
         return "Name = " + super().__repr__()
@@ -82,8 +82,8 @@ class Record:
         return self.__birthday
 
     def __str__(self):
-        birthday_str = "" if not self.birthday else f" birthday: {self.get_formatted_birthday()}"
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}" + birthday_str
+        birthday_str = "" if not self.birthday else f", birthday: {self.get_formatted_birthday()}"
+        return f"Contact name: {self.name}, phones: {'; '.join(p.value for p in self.phones)}" + birthday_str
 
     def with_phone_validation(func):
         def inner(self, phone: str):
@@ -166,7 +166,7 @@ class AddressBook(UserDict):
                 contacts.append(
                     {"name": record.name.value, "birthday": record.birthday})
 
-        get_birthdays_per_week(contacts)
+        get_birthdays_per_week(contacts, True)
 
 
 if __name__ == "__main__":

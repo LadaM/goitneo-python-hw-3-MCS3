@@ -40,6 +40,10 @@ def get_birthdays_per_week(users, run_weekends=False):
     for weekday in sorted(users_by_weekday.keys()):
         if is_weekend(weekday):
             users_by_weekday[0].extend(users_by_weekday.pop(weekday))
+    
+    # if there are no birthdays next week
+    if len(users_by_weekday) == 0:
+        print("No one has birthday next week")
 
     # sorting the result by the day of the week => Mo will always come first
     for d, n in sorted(users_by_weekday.items()):

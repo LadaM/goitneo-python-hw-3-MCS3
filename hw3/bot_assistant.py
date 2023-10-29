@@ -21,6 +21,8 @@ def main():
                     print(msg)
                 except ValueError:
                     raise InvalidCommand(COMMANDS.get('add-birthday'))
+            elif command.startswith("birthdays"):
+                contacts.birthdays()
             elif command.startswith("add"):
                 try:
                     _, name, phone = command.split(' ')
@@ -86,9 +88,9 @@ def add_contact(name: str, phone: str, contacts: AddressBook):
     except ValueNotFound:
         new_record = Record(name)
         new_record.add_phone(phone)
-        print(new_record)
         contacts.add_record(record=new_record)
     return "Contact added"
+
 
 @input_error
 def add_birthday(name: str, birthday: str, contacts: AddressBook):
@@ -112,8 +114,7 @@ def get_phone(name, contacts: AddressBook):
 
 @input_error
 def show_all_contacts(contacts: AddressBook):
-    print('\n'.join([str(record) for record in contacts.get_records()]))  # TODO prettify the output
-    # return '\n'.join(contacts.values())
+    return '\n'.join([str(record) for record in contacts.get_records()])
 
 
 if __name__ == "__main__":
