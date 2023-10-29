@@ -14,6 +14,13 @@ def main():
         try:
             if command == "hello":
                 print("How can I help you?")
+            elif command.startswith("add-birthday"):
+                try:
+                    _, name, birthday = command.split(' ')
+                    msg = add_birthday(name, birthday, contacts)
+                    print(msg)
+                except ValueError:
+                    raise InvalidCommand(COMMANDS.get('add-birthday'))
             elif command.startswith("add"):
                 try:
                     _, name, phone = command.split(' ')
@@ -67,7 +74,6 @@ def input_error(func):
         except FileNotFoundError:
             # if the file is empty there are no contacts to show
             return "We haven't stored any contacts yet"
-
     return inner
 
 
@@ -82,16 +88,20 @@ def add_contact(name: str, phone: str, contacts: AddressBook):
         new_record.add_phone(phone)
         print(new_record)
         contacts.add_record(record=new_record)
-
     return "Contact added"
+
+@input_error
+def add_birthday(name: str, birthday: str, contacts: AddressBook):
+    record = contacts.find(name)
+    if record:
+        record.add_birthday(birthday)
+        return "Birthday added"
 
 
 @input_error
 def update_contact(name, old_phone, new_phone, contacts: AddressBook):
     record = contacts.find(name)
-    # TODO extend with old and new phone funcitonality
     record.edit_phone(old_phone=old_phone, new_phone=new_phone)
-
     return "Contact updated"
 
 
