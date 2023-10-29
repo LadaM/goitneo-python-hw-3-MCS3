@@ -18,7 +18,7 @@ class Field:
 
     def __repr__(self) -> str:
         return str(self.value)
-
+    
     def __eq__(self, __value: object) -> bool:
         self.value == __value
 
@@ -29,7 +29,7 @@ class Name(Field):
 
     def __str__(self):
         return super().__str__().title()
-
+    
     def __repr__(self) -> str:
         return "Name = " + super().__repr__()
 
@@ -85,8 +85,8 @@ class Record:
         return self.__birthday
 
     def __str__(self):
-        birthday_str = "" if not self.birthday else f", birthday: {self.get_formatted_birthday()}"
-        return f"Contact name: {self.name}, phones: {'; '.join(str(p) for p in self.phones)}" + birthday_str
+        birthday_str = "" if not self.birthday else '\n' + f"{' ':24} - birthday: {self.get_formatted_birthday()}"
+        return f"Contact name: {str(self.name):<10} - phones: {' ':2}{'; '.join(str(p) for p in self.phones)}" + birthday_str
 
     def with_phone_validation(func):
         def inner(self, phone: str):
@@ -221,7 +221,6 @@ if __name__ == "__main__":
 
     # Виведення всіх записів у книзі
     for name, record in book.data.items():
-        print(name, end='-->')
         print(record)
 
     # Знаходження та редагування телефону для John
