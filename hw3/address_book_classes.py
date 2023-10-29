@@ -42,6 +42,9 @@ class Phone(Field):
     def __eq__(self, __value: object) -> bool:
         return super().__eq__(__value)
 
+    def __str__(self):
+        return super().__str__()
+    
     @classmethod
     def validate(self, phone_number) -> bool:
         if len(phone_number) == 10 and phone_number.isdigit():
@@ -83,7 +86,7 @@ class Record:
 
     def __str__(self):
         birthday_str = "" if not self.birthday else f", birthday: {self.get_formatted_birthday()}"
-        return f"Contact name: {self.name}, phones: {'; '.join(p.value for p in self.phones)}" + birthday_str
+        return f"Contact name: {self.name}, phones: {'; '.join(str(p) for p in self.phones)}" + birthday_str
 
     def with_phone_validation(func):
         def inner(self, phone: str):
@@ -106,6 +109,8 @@ class Record:
             self.__birthday = None
 
     def get_formatted_birthday(self) -> str:
+        if not self.birthday:
+            raise ValueError(f'No birthday stored for {self.name}')
         return self.birthday.strftime(BIRTHDAY_FORMAT)
 
     def show_birthday(self):
@@ -136,6 +141,8 @@ class Record:
 
 
 class AddressBook(UserDict):
+    def is_empty(self):
+        return len(self.data) == 0
 
     def find(self, name: str) -> Record:
         '''finds record by username'''
@@ -166,7 +173,7 @@ class AddressBook(UserDict):
                 contacts.append(
                     {"name": record.name.value, "birthday": record.birthday})
 
-        get_birthdays_per_week(contacts, True)
+        return get_birthdays_per_week(contacts, True)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 from pathlib import Path
+
+from birthdays_next_week import get_usernames_by_weekday_lines
 from constants import COMMANDS, CONTACTS_FILE
-from exceptions import ValueNotFound, InvalidCommand, DuplicateEntry
+from exceptions import ValueNotFound, InvalidCommand, DuplicateEntry, AddressBookEmpty
 from address_book_classes import AddressBook, Record
 
 
@@ -29,7 +31,8 @@ def main():
                 except ValueError:
                     raise InvalidCommand(COMMANDS.get('show-birthday'))
             elif command.startswith("birthdays"):
-                contacts.birthdays()
+                msg = show_birthdays_next_week(contacts)
+                print(msg)
             elif command.startswith("add"):
                 try:
                     _, name, phone = command.split(' ')
@@ -77,11 +80,11 @@ def input_error(func):
         except ValueError as e:
             return e.args[0]
         except DuplicateEntry as error:
+            print(error)
             return f"We alreay have an entry with name {error.name} and phone {error.phone}"
         except ValueNotFound as error:
             return f"Phone {error.phone} wasn't found in our records!" if error.phone else f"No contact for name {error.name} found"
-        except FileNotFoundError:
-            # if the file is empty there are no contacts to show
+        except AddressBookEmpty:
             return "We haven't stored any contacts yet"
     return inner
 
@@ -122,12 +125,21 @@ def update_contact(name, old_phone, new_phone, contacts: AddressBook):
 
 @input_error
 def get_phone(name, contacts: AddressBook):
-    return contacts.find(name)
+    return '; '.join(str(phone) for phone in contacts.find(name).phones)
 
 
 @input_error
 def show_all_contacts(contacts: AddressBook):
+    if contacts.is_empty():
+        raise AddressBookEmpty
     return '\n'.join([str(record) for record in contacts.get_records()])
+
+
+@input_error
+def show_birthdays_next_week(contacts: AddressBook):
+    if contacts.is_empty():
+        raise AddressBookEmpty
+    return '\n'.join(get_usernames_by_weekday_lines(contacts.birthdays()))
 
 
 if __name__ == "__main__":

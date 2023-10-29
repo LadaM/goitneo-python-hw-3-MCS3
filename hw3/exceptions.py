@@ -25,3 +25,5 @@ class DuplicateEntry(Exception):
         self.phone = phone
 
 
+class AddressBookEmpty(Exception):
+    pass
