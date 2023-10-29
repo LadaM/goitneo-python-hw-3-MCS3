@@ -6,13 +6,16 @@ from constants import BIRTHDAY_FORMAT, DATE_FORMAT
 
 class Field:
     def __init__(self, value):
-        self.value = value
+        self.__value = value
+
+    @property
+    def value(self):
+        return self.__value
 
     def __str__(self):
         return str(self.value)
 
     def __eq__(self, __value: object) -> bool:
-        print(self.value == __value)
         self.value == __value
 
 
@@ -23,14 +26,18 @@ class Name(Field):
 
 class Phone(Field):
     def __init__(self, phone: str) -> None:
-        super().__init__(value=phone)
+        if Phone.validate(phone):
+            super().__init__(value=phone)
 
     def __eq__(self, __value: object) -> bool:
         return super().__eq__(__value)
 
     @classmethod
     def validate(self, phone_number) -> bool:
-        return len(phone_number) == 10 and phone_number.isdigit()
+        if len(phone_number) == 10 and phone_number.isdigit():
+            return True
+        else:
+            raise ValueError("Invalid phone number!")
 
 
 class Birthday(Field):
@@ -48,9 +55,17 @@ class Birthday(Field):
 
 class Record:
     def __init__(self, name, birthday='') -> None:
-        self.name = Name(name)
-        self.phones = []
+        self.__name = Name(name)
+        self.__phones = []
         self.add_birthday(birthday)
+
+    @property
+    def phones(self):
+        return self.__phones
+
+    @property
+    def name(self):
+        return self.__name
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}" + "" if not self.birthday else f"birthday {self.birthday.strftime(BIRTHDAY_FORMAT)}"
@@ -59,8 +74,7 @@ class Record:
         def inner(self, phone: str):
             if Phone.validate(phone_number=phone):
                 return func(self, phone)
-            else:
-                raise ValueError("Invalid phone number!")
+
         return inner
 
     @with_phone_validation
@@ -129,6 +143,13 @@ class AddressBook(UserDict):
 if __name__ == "__main__":
     # Створення нової адресної книги
     book = AddressBook()
+
+    # trying to create a phone with invalid input
+    try:
+        phone = Phone("924875643r")
+        print(phone)
+    except ValueError as e:
+        print(e.args)
 
     # Створення запису для John
     john_record = Record("John")
