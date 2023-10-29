@@ -66,6 +66,10 @@ class Record:
     @property
     def name(self):
         return self.__name
+    
+    @property
+    def birthday(self):
+        return self.__birthday
 
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}" + "" if not self.birthday else f"birthday {self.birthday.strftime(BIRTHDAY_FORMAT)}"
@@ -74,7 +78,6 @@ class Record:
         def inner(self, phone: str):
             if Phone.validate(phone_number=phone):
                 return func(self, phone)
-
         return inner
 
     @with_phone_validation
@@ -87,9 +90,9 @@ class Record:
 
     def add_birthday(self, birthday: str):
         if birthday and Birthday.validate(birthday):
-            self.birthday = datetime.strptime(birthday, BIRTHDAY_FORMAT)
+            self.__birthday = datetime.strptime(birthday, BIRTHDAY_FORMAT)
         else:
-            self.birthday = None
+            self.__birthday = None
 
     @with_phone_validation
     def delete_phone(self, phone: str):
