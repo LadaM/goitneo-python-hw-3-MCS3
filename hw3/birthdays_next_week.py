@@ -4,13 +4,13 @@ from collections import defaultdict
 
 
 def get_birthdays_per_week(users, run_weekends=False):
-    '''Prints day of the week and name of the person who has a birthday that day for the next week, doesn't work on weekends.
+    '''Prints day of the week and name of the person who has a birthday that day for the next week. 
+    ! Doesn't work on weekends.
         Parameters:
         - users (list of user dicts) - [{"name": "Bill Gates", "birthday": datetime(1955, 10, 28)},...]
         - run_weekends (bool) - default = False, if set to True, function will run on weekends
         Output:
-        - doesn't retutrn anything
-        - prints weekday: username for every user who has birhday next week sorted Mo -> Fr, Sa & Su are moved to the next Mo
+        - returns dictionary of usernames grouped by day of the week 
     '''
     users_by_weekday = defaultdict(list)
     today = datetime.now().date()
@@ -40,14 +40,31 @@ def get_birthdays_per_week(users, run_weekends=False):
     for weekday in sorted(users_by_weekday.keys()):
         if is_weekend(weekday):
             users_by_weekday[0].extend(users_by_weekday.pop(weekday))
-    
+
+    return users_by_weekday
+
+
+def show_usernames_by_weekday(users_by_weekday):
+    '''Prints weekday: username for every user who has birhday next week sorted Mo -> Fr, Sa & Su are moved to the next Mo
+    '''
+    print('\n'.join(get_usernames_by_weekday_lines(users_by_weekday)))
+
+
+def get_usernames_by_weekday_lines(users_by_weekday):
+    '''Returns formatted lines
+       weekday name: username, ... 
+       for every user who has birhday next week sorted Mo -> Fr, Sa & Su are moved to the next Mo
+    '''
     # if there are no birthdays next week
     if len(users_by_weekday) == 0:
-        print("No one has birthday next week")
+        return "No one has birthday next week"
 
+    lines = []
     # sorting the result by the day of the week => Mo will always come first
-    for d, n in sorted(users_by_weekday.items()):
-        print(f"{calendar.day_name[d] + ':':<10} {', '.join(n)}")
+    for weekday, username in sorted(users_by_weekday.items()):
+        lines.append(
+            f"{calendar.day_name[weekday] + ':':<10} {', '.join(username)}")
+    return lines
 
 
 if __name__ == "__main__":
@@ -68,4 +85,5 @@ if __name__ == "__main__":
             timedelta(days=20)},  # Birthday 20 days from today
     ]
 
-    get_birthdays_per_week(users, run_weekends=True)
+    birthdays_next_week = get_birthdays_per_week(users, run_weekends=True)
+    show_usernames_by_weekday(birthdays_next_week)
