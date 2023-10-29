@@ -72,7 +72,8 @@ class Record:
         return self.__birthday
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}" + "" if not self.birthday else f"birthday {self.birthday.strftime(BIRTHDAY_FORMAT)}"
+        birthday_str =  "" if not self.birthday else f" birthday: {self.get_formatted_birthday()}"
+        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}" + birthday_str
 
     def with_phone_validation(func):
         def inner(self, phone: str):
@@ -93,6 +94,12 @@ class Record:
             self.__birthday = datetime.strptime(birthday, BIRTHDAY_FORMAT)
         else:
             self.__birthday = None
+        
+    def get_formatted_birthday(self):
+        return self.birthday.strftime(BIRTHDAY_FORMAT)
+
+    def show_birthday(self):
+        return f"{self.name} was born on {self.get_formatted_birthday()}"
 
     @with_phone_validation
     def delete_phone(self, phone: str):
@@ -168,6 +175,7 @@ if __name__ == "__main__":
     # creating a record with a valid BD
     anna_record = Record("Anne", birthday='01.10.1980')
     anna_record.add_phone("9876543210")
+    print(anna_record.show_birthday())
     book.add_record(anna_record)
 
     # Додавання запису John до адресної книги
@@ -181,6 +189,7 @@ if __name__ == "__main__":
 
     # Виведення всіх записів у книзі
     for name, record in book.data.items():
+        print(name, end='-->')
         print(record)
 
     # Знаходження та редагування телефону для John
