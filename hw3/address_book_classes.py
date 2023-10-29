@@ -1,7 +1,8 @@
 from collections import UserDict
-from datetime import datetime
+from datetime import datetime, timedelta
 from exceptions import DuplicateEntry, ValueNotFound
 from constants import BIRTHDAY_FORMAT, DATE_FORMAT
+from birthdays_next_week import get_birthdays_per_week
 
 
 class Field:
@@ -15,6 +16,9 @@ class Field:
     def __str__(self):
         return str(self.value)
 
+    def __repr__(self) -> str:
+        return str(self.value)
+
     def __eq__(self, __value: object) -> bool:
         self.value == __value
 
@@ -22,6 +26,12 @@ class Field:
 class Name(Field):
     def __init__(self, name: str) -> None:
         super().__init__(value=name)
+
+    def __str__(self):
+        return super().__str__()
+
+    def __repr__(self) -> str:
+        return "Name = " + super().__repr__()
 
 
 class Phone(Field):
@@ -66,13 +76,13 @@ class Record:
     @property
     def name(self):
         return self.__name
-    
+
     @property
     def birthday(self):
         return self.__birthday
 
     def __str__(self):
-        birthday_str =  "" if not self.birthday else f" birthday: {self.get_formatted_birthday()}"
+        birthday_str = "" if not self.birthday else f" birthday: {self.get_formatted_birthday()}"
         return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}" + birthday_str
 
     def with_phone_validation(func):
@@ -94,8 +104,8 @@ class Record:
             self.__birthday = datetime.strptime(birthday, BIRTHDAY_FORMAT)
         else:
             self.__birthday = None
-        
-    def get_formatted_birthday(self):
+
+    def get_formatted_birthday(self) -> str:
         return self.birthday.strftime(BIRTHDAY_FORMAT)
 
     def show_birthday(self):
@@ -149,6 +159,15 @@ class AddressBook(UserDict):
         '''returs list of all records stored in the address book'''
         return self.data.values()
 
+    def birthdays(self):
+        contacts = []
+        for record in self.get_records():
+            if (record.birthday):
+                contacts.append(
+                    {"name": record.name.value, "birthday": record.birthday})
+
+        get_birthdays_per_week(contacts)
+
 
 if __name__ == "__main__":
     # Створення нової адресної книги
@@ -173,8 +192,14 @@ if __name__ == "__main__":
         print(e.args)
 
     # creating a record with a valid BD
-    anna_record = Record("Anne", birthday='01.10.1980')
+    today = datetime.now()
+    plus_one_day = today + timedelta(days=1)
+    annas_birthday: datetime = datetime.strptime('01.10.1980', BIRTHDAY_FORMAT)
+    # Anna will have a BD tomorrow
+    anna_record = Record("Anne", birthday=datetime.strftime(
+        annas_birthday.replace(month=plus_one_day.month, day=(plus_one_day.day)), BIRTHDAY_FORMAT))
     anna_record.add_phone("9876543210")
+    # showing formatted birthday
     print(anna_record.show_birthday())
     book.add_record(anna_record)
 
@@ -208,4 +233,7 @@ if __name__ == "__main__":
 
     # Видалення запису Jane
     book.delete("Jane")
+
+    # getting birthdays next week
+    book.birthdays()
     print(book)
